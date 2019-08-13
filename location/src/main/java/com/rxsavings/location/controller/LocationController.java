@@ -41,9 +41,14 @@ public class LocationController {
 	@RequestMapping(value = "/pharmacy", method = RequestMethod.GET)
 	public Result getClosestPharmacy(@RequestParam(name = "latitude") @Valid String latitude,
 			@RequestParam(name = "longitude") @Valid String longitude) throws IOException, LocationException {
-		// locationService.getClosestDistance("38.872059", "-94.665558");
-		double lat = Double.valueOf(latitude);
-		double lngtd = Double.valueOf(longitude);
+		double lat = 0.0;
+		double lngtd = 0.0;
+		try {
+			lat = Double.valueOf(latitude);
+			lngtd = Double.valueOf(longitude);
+		} catch (NumberFormatException e) {
+			throw new LocationException("Invalid Input. Please check.");
+		}
 		if (lat < -90.0 || lat > 90.0) {
 			throw new LocationException("Latitude must be between -90.0 to 90.0");
 		}
