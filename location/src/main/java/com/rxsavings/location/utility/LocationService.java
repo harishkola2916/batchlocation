@@ -35,13 +35,13 @@ public class LocationService {
 	 * user location to it
 	 * 
 	 * 
-	 * @param inputLatitude
-	 * @param inputLongitude
-	 * @return
+	 * @param inputLatitude  latitude of user location
+	 * @param inputLongitude longitude of user location
+	 * @return {@link Result} object
 	 * @throws IOException
 	 * @throws LocationException
 	 */
-	public Result getClosestDistance(double inputLatitude, double inputLongitude)
+	public Result getClosestPharmacyAndItsDistance(double inputLatitude, double inputLongitude)
 			throws IOException, LocationException {
 
 		List<Pharmacy> pharmacyList = new ArrayList<Pharmacy>();
@@ -63,27 +63,40 @@ public class LocationService {
 		}
 
 		double minDistance = Double.MAX_VALUE;
-		double earthRadius = 3958.75;
 		for (Pharmacy pharmacy : pharmacyList) {
-
-			double csvLatitude = pharmacy.getLatitude();
-			double csvLongitude = pharmacy.getLongitude();
-			double deltaLat = Math.toRadians(csvLatitude - inputLatitude);
-			double deltaLng = Math.toRadians(csvLongitude - inputLongitude);
-			double sindLat = Math.sin(deltaLat / 2);
-			double sindLng = Math.sin(deltaLng / 2);
-			double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2) * Math.cos(Math.toRadians(inputLatitude))
-					* Math.cos(Math.toRadians(csvLatitude));
-			double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-			double dist = earthRadius * c;
-			if (dist < minDistance) {
-				minDistance = dist;
+			double distance = getMinmDistance(pharmacy.getLatitude(), pharmacy.getLongitude(), inputLatitude,
+					inputLongitude);
+			if (distance < minDistance) {
+				minDistance = distance;
 				result.setMinDistance(minDistance);
 				result.setPharmObject(pharmacy);
 			}
-
 		}
 		return result;
 	}
 
+	/**
+	 * Returns distance between input location and pharmacy location
+	 * 
+	 * @param csvLatitude    latitude of pharmacy in area
+	 * @param csvLongitude   longitude of pharmacy in area
+	 * @param inputLatitude  latitude of user location
+	 * @param inputLongitude longitude of user location
+	 * @return returns double value - distance between two location's(latitudes and
+	 *         longitudes)
+	 */
+	private double getMinmDistance(double csvLatitude, double csvLongitude, double inputLatitude,
+			double inputLongitude) {
+		double earthRadius = 3958.75;
+		double deltaLat = Math.toRadians(csvLatitude - inputLatitude);
+		double deltaLng = Math.toRadians(csvLongitude - inputLongitude);
+		double sindLat = Math.sin(deltaLat / 2);
+		double sindLng = Math.sin(deltaLng / 2);
+		double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2) * Math.cos(Math.toRadians(inputLatitude))
+				* Math.cos(Math.toRadians(csvLatitude));
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		double dist = earthRadius * c;
+		return dist;
+
+	}
 }

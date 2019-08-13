@@ -39,7 +39,7 @@ public class LocationController {
 	 * @throws LocationException
 	 */
 	@RequestMapping(value = "/pharmacy", method = RequestMethod.GET)
-	public Result getMinmDistPharmacy(@RequestParam(name = "latitude") @Valid String latitude,
+	public Result getClosestPharmacy(@RequestParam(name = "latitude") @Valid String latitude,
 			@RequestParam(name = "longitude") @Valid String longitude) throws IOException, LocationException {
 		// locationService.getClosestDistance("38.872059", "-94.665558");
 		double lat = Double.valueOf(latitude);
@@ -52,7 +52,7 @@ public class LocationController {
 			throw new LocationException("Latitude must be between -180.0 to 180.0");
 		}
 		try {
-			return locationService.getClosestDistance(lat, lngtd);
+			return locationService.getClosestPharmacyAndItsDistance(lat, lngtd);
 		} catch (LocationException | IOException e) {
 			throw new LocationException("Unable to find the closest pharmacy");
 		}
